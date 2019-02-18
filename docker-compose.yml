@@ -1,8 +1,27 @@
-version: '0.0.0'
+version: '3'
 services:
+  #TODO systemd
+  #https://hub.docker.com/_/centos/
+  #
   # Postgres database
   # TODO
+  dbpostgres:
+    image: postgres
+    volumes:
+      - /private/var/lib/postgresql:/var/lib/postgresql
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: dspace
+      POSTGRES_PASSWORD: dspace
+      POSTGRES_DB: dspace
 
   # DSpace
-  dspace-dev:
-    build: .
+  dspace:
+    build:
+      context: /home/jitkanovotna/git/ukuk-dspace
+      dockerfile: Dockerfile
+    volumes:
+        - .:/code
+    ports:
+      - "8081:8080"

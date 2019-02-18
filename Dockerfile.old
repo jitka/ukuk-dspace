@@ -1,0 +1,53 @@
+#FROM alpine:8
+#FROM local/c7-systemd
+FROM centos/systemd
+#FROM maven:3-jdk7
+#LABEL maintainer=jitka.novotna@ruk.cuni.cz
+
+#RUN apk add --no-cache maven postgresql openjdk7-jre 
+#RUN apk add --no-cache python py-pip
+
+RUN yum -y install maven ant postgresql-server tomcat tomcat-webapps tomcat-admin-webapps 
+
+# TODO smazat, tohle je jen pro testovani
+RUN yum -y install epel-release
+RUN yum -y install python python-pip
+
+#RUN groupadd tomcat
+#RUN useradd -M -s /bin/nologin -g tomcat -d /opt/tomcat tomcat
+RUN adduser -u 1000 dspace
+
+RUN mkdir -m 777 /var/lib/dspace/ 
+ENV TOMCAT_USER=dspace
+#RUN `echo TOMCAT_USER=dspace` | tee -a /etc/environment
+RUN systemctl enable tomcat
+
+COPY . /app/ 
+RUN cp /app/environment /etc/
+RUN cp -r /app/Catalina /etc/tomcat
+RUN chown dspace:dspace  /etc/tomcat/Catalina/localhost/* 
+
+#RUN systemctl start tomcat # nejde, proč? enable jde
+
+WORKDIR /app/
+
+#USER dspace:dspace
+#RUN mvn clean
+#RUN mvn package -Dmirage2.on=true -Denv=build-localhost
+
+#RUN sh -e build.sh
+
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+# Make port 80 (common http port) available to the world outside this container
+EXPOSE 80
+# Make port 8080 (common tomcat port) available to the world outside this container
+EXPOSE 8080
+
+# Define environment variable
+ENV NAME World
+
+#CMD ["/usr/sbin/init"]
+#CMD ["python", "app.py"]
