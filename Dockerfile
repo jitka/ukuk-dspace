@@ -1,4 +1,5 @@
 FROM centos/systemd
+#FROM centos
 LABEL maintainer=jitka.novotna@ruk.cuni.cz
 LABEL version=0.4
 
@@ -12,7 +13,7 @@ RUN adduser -u 1000 dspace
 ENV TOMCAT_USER=dspace
 
 WORKDIR /opt/dspace.build
-COPY . /opt/dspace.build 
+ADD . /opt/dspace.build 
 RUN cp /opt/dspace.build/environment /etc/ && \
     cp -r /opt/dspace.build/Catalina /etc/tomcat && \
     chown dspace:dspace  /etc/tomcat/Catalina/localhost/* && \
@@ -21,6 +22,7 @@ RUN cp /opt/dspace.build/environment /etc/ && \
 RUN mvn package -Dmirage2.on=true -Denv=build-docker
 
 WORKDIR /opt/dspace.build/dspace/target/dspace-installer
+RUN ant install_code update_webapps update_configs update
 #RUN ant fresh_install
 
-#EXPOSE 8080
+EXPOSE 8080

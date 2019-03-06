@@ -1,10 +1,20 @@
 version: '3'
 services:
-  #TODO systemd
-  #https://hub.docker.com/_/centos/
-  #
-  # Postgres database
-  # TODO
+  dspace-abg:
+      #image: dspace:latest
+    build:
+        #context: . 
+      context: /home/jitkanovotna/git/ukuk-dspace
+      dockerfile: Dockerfile
+      #command: "ps && echo 'hui'"
+      #command: "ant fresh_install"
+    command: ["/opt/dspace-build/wait-for-postgres.sh", "dbpostres:5433", "--", "ant", "fresh_install"]
+    volumes:
+        - .:/code
+    ports:
+      - "8081:8080"
+    depends_on:
+        - dbpostgres
   dbpostgres:
     image: postgres
     volumes:
@@ -16,12 +26,3 @@ services:
       POSTGRES_PASSWORD: dspace
       POSTGRES_DB: dspace
 
-  # DSpace
-  dspace:
-    build:
-      context: /home/jitkanovotna/git/ukuk-dspace
-      dockerfile: Dockerfile
-    volumes:
-        - .:/code
-    ports:
-      - "8081:8080"
