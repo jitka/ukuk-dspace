@@ -1,14 +1,14 @@
 version: '3'
 services:
   dspace-abg:
-      #image: dspace:latest
+    image: dspace-abg
     build:
         #context: . 
-      context: /home/jitkanovotna/git/ukuk-dspace
-      dockerfile: Dockerfile
+        context: /home/jitkanovotna/git/ukuk-dspace
+        dockerfile: Dockerfile
       #command: "ps && echo 'hui'"
       #command: "ant fresh_install"
-    command: ["/opt/dspace-build/wait-for-postgres.sh", "dbpostres:5433", "--", "ant", "fresh_install"]
+    command: ["/opt/dspace.build/wait-for-postgres.sh", "dbpostgres:5432", "--", "ant", "fresh_install"]
     volumes:
         - .:/code
     ports:
